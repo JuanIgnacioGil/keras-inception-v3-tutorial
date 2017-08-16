@@ -1,8 +1,8 @@
 import config
 import logging
 from flask import current_app, Flask, render_template, request
-import urllib2
-import storage
+import urllib
+from google.cloud import storage
 import base64
 import json
 
@@ -31,12 +31,12 @@ def upload_image_file(stream, filename, content_type):
 def fetch_predictions(img_stream):
     predictions = {}
     server_url = current_app.config['PREDICTION_SERVICE_URL']
-    req = urllib2.Request(server_url, json.dumps({'data': base64.b64encode(img_stream)}),
+    req = urllib.request.Request(server_url, json.dumps({'data': base64.b64encode(img_stream)}),
                           {'Content-Type': 'application/json'})
     try:
-        f = urllib2.urlopen(req)
+        f = urllib.urlopen(req)
         predictions = json.loads(f.read())
-    except urllib2.HTTPError as e:
+    except urllib.HTTPError as e:
         current_app.logger.exception(e)
 
     current_app.logger.info('Predictions: %s', predictions)
